@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\models\OtdelForm;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -9,6 +10,7 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\Bronirovanie;
 
 class SiteController extends Controller
 {
@@ -64,6 +66,7 @@ class SiteController extends Controller
         return $this->render('index');
     }
 
+
     /**
      * Login action.
      *
@@ -103,26 +106,38 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
 
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
 
     /**
      * Displays about page.
      *
      * @return string
      */
-    public function actionAbout()
-    {
-        return $this->render('about');
+    public function actionItotdel(){
+        if(Yii::$app->user->can('moder')){
+
+            $model = new OtdelForm();
+            $array = $model->find()->all();
+            return $this->render('zayavki',[
+                'array' => $array,
+            ]);
+        }
+        else{
+           return $this->redirect('site/alexandrov');
+        }
+
+
+    }
+    public function actionAlexandrov(){
+        $model = new OtdelForm();
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+
+
+            return $this->refresh();
+        }
+
+        return $this->render('test', [
+            'model' => $model,
+        ]);
     }
 }
